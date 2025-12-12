@@ -6,7 +6,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 80px;
+    height: 140px;
     background: rgba(23, 29, 55, 0.70);
     border-bottom: 2px solid #5d2ebf;
     display: flex;
@@ -40,7 +40,7 @@
 }
 
 .app-header.shrink .header-logo {
-    height: 90px;
+    height: 110px;
 }
 
 /* "Home" link */
@@ -56,11 +56,7 @@
     color: #5d2ebf;
 }
 
-//* Body offset so content doesn't hide under header 
-body {
-    margin-top: 400px;
-}
-*/
+
 
 /* ------------------------------------------------------------
    GLOBAL LAYOUT

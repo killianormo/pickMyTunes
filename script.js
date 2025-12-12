@@ -214,3 +214,31 @@ else {
 }
 
 init();
+
+/* ------------------------------------------------------------
+   HEADER SCROLL LOGIC
+------------------------------------------------------------ */
+
+let lastScroll = 0;
+const header = document.getElementById("appHeader");
+
+window.addEventListener("scroll", () => {
+    const current = window.scrollY;
+
+    // Shrink the header if user scrolls down even slightly
+    if (current > 20) {
+        header.classList.add("shrink");
+    } else {
+        header.classList.remove("shrink");
+    }
+
+    // Detect scroll direction: highlight when scrolling UP
+    if (current < lastScroll) {
+        header.classList.add("scrolled-up");
+    } else {
+        header.classList.remove("scrolled-up");
+    }
+
+    lastScroll = current;
+});
+

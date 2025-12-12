@@ -6,6 +6,18 @@ const redirectUri = window.location.origin + window.location.pathname;
 const albumCountToPick = 3;
 
 /* ------------------------------------------------------------
+   SPINNERS
+------------------------------------------------------------ */
+
+function showSpinner() {
+  document.getElementById("spinner").style.display = "block";
+}
+
+function hideSpinner() {
+  document.getElementById("spinner").style.display = "none";
+}
+
+/* ------------------------------------------------------------
    PKCE HELPERS
 ------------------------------------------------------------ */
 async function generateCodeVerifier(length = 64) {
@@ -141,7 +153,10 @@ async function init() {
     const tokenData = await getAccessToken(code);
     accessToken = tokenData.access_token;
 
+    showSpinner();
     savedAlbums = await fetchSavedAlbums(accessToken);
+    hideSpinner();
+
 
     document.getElementById("pickBtn").style.display = "inline-block";
   }
@@ -151,5 +166,6 @@ document.getElementById("pickBtn").onclick = () => {
   const selected = pickRandomAlbums(savedAlbums, albumCountToPick);
   displayAlbums(selected);
 };
+
 
 init();

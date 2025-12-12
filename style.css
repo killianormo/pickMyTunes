@@ -108,6 +108,7 @@ button:hover {
 /* ------------------------------------------------------------
    LOADING TILE
 ------------------------------------------------------------ */
+/*
 .loading-tile {
     width: 256px;
     background: #22294d;
@@ -133,7 +134,56 @@ button:hover {
 }
 
 .loading-logo {
-    width: 128px;     /* adjust if you want it larger */
+    width: 128px;     
+    height: auto;
+    opacity: 0.9;
+}
+
+.loading-bottom {
+    background: #5d2ebf;
+    color: #ffffff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+}
+
+#loadingDots {
+    display: inline-block;
+    width: 20px;
+    text-align: left;
+}
+
+*/
+
+/* ------------------------------------------------------------
+   LOADING TILE
+------------------------------------------------------------ */
+.loading-tile {
+    width: 256px;
+    background: #22294d;
+    border-radius: 14px;
+    padding: 20px 0;
+    margin-top: 40px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+}
+
+.loading-top {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.loading-logo {
+    width: 128px;
     height: auto;
     opacity: 0.9;
 }

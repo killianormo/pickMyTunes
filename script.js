@@ -36,6 +36,7 @@ function startLoadingAnimation() {
 function stopLoadingAnimation() {
     clearInterval(loadingInterval);
 }
+
 /* ------------------------------------------------------------
    Handle Pick More button
 ------------------------------------------------------------ */

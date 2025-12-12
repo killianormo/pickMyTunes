@@ -36,7 +36,13 @@ function startLoadingAnimation() {
 function stopLoadingAnimation() {
     clearInterval(loadingInterval);
 }
-
+/* ------------------------------------------------------------
+   Handle Pick More button
+------------------------------------------------------------ */
+document.getElementById("pickMoreBtn").onclick = () => {
+  const selected = pickRandomAlbums(savedAlbums, albumCountToPick);
+  displayAlbums(selected);
+};
 
 /* ------------------------------------------------------------
    PKCE HELPERS
@@ -154,7 +160,12 @@ function displayAlbums(list) {
       </div>
     `;
   });
+
+  // Update the button text dynamically
+  const pickMoreBtn = document.getElementById("pickMoreBtn");
+  pickMoreBtn.textContent = `Pick ${albumCountToPick} More!`;
 }
+
 
 /* ------------------------------------------------------------
    INIT
@@ -174,19 +185,23 @@ if (code) {
     const tokenData = await getAccessToken(code);
     accessToken = tokenData.access_token;
 
-    // Show the animated “Finding your albums…” message
+    // Show loading message
     document.getElementById("loadingMessage").style.display = "block";
     startLoadingAnimation();
 
     // Fetch albums
     savedAlbums = await fetchSavedAlbums(accessToken);
 
-    // Stop message and hide it
+    // Stop loading
     stopLoadingAnimation();
     document.getElementById("loadingMessage").style.display = "none";
 
-    // Show the pick button
-    document.getElementById("pickBtn").style.display = "inline-block";
+    // Automatically pick albums on first load
+    const initiallySelected = pickRandomAlbums(savedAlbums, albumCountToPick);
+    displayAlbums(initiallySelected);
+
+    // Show the new dynamic button
+    document.getElementById("pickMoreBtn").style.display = "inline-block";
    }
 }
 

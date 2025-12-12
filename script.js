@@ -6,6 +6,23 @@ const redirectUri = "https://killianormo.github.io/pickMyTunes/";
 const albumCountToPick = 3;
 
 /* ------------------------------------------------------------
+   PKCE HELPERS
+------------------------------------------------------------ */
+async function generateCodeVerifier(length = 64) {
+  let text = "";
+  let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+  for (let i = 0; i < length; i++) text += possible.charAt(Math.random() * possible.length | 0);
+  return text;
+}
+
+async function generateCodeChallenge(verifier) {
+  const data = new TextEncoder().encode(verifier);
+  const digest = await crypto.subtle.digest("SHA-256", data);
+  return btoa(String.fromCharCode(...new Uint8Array(digest)))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+/* ------------------------------------------------------------
    SPINNERS
 ------------------------------------------------------------ */
 
@@ -37,30 +54,6 @@ function stopLoadingAnimation() {
     clearInterval(loadingInterval);
 }
 
-/* ------------------------------------------------------------
-   Handle Pick More button
------------------------------------------------------------- */
-document.getElementById("pickMoreBtn").onclick = () => {
-  const selected = pickRandomAlbums(savedAlbums, albumCountToPick);
-  displayAlbums(selected);
-};
-
-/* ------------------------------------------------------------
-   PKCE HELPERS
------------------------------------------------------------- */
-async function generateCodeVerifier(length = 64) {
-  let text = "";
-  let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
-  for (let i = 0; i < length; i++) text += possible.charAt(Math.random() * possible.length | 0);
-  return text;
-}
-
-async function generateCodeChallenge(verifier) {
-  const data = new TextEncoder().encode(verifier);
-  const digest = await crypto.subtle.digest("SHA-256", data);
-  return btoa(String.fromCharCode(...new Uint8Array(digest)))
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
 
 /* ------------------------------------------------------------
    LOGIN
@@ -105,6 +98,15 @@ async function getAccessToken(code) {
 
   return response.json();
 }
+
+
+/* ------------------------------------------------------------
+   Handle Pick More button
+------------------------------------------------------------ */
+document.getElementById("pickMoreBtn").onclick = () => {
+  const selected = pickRandomAlbums(savedAlbums, albumCountToPick);
+  displayAlbums(selected);
+};
 
 /* ------------------------------------------------------------
    FETCH SAVED ALBUMS

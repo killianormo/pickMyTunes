@@ -7,7 +7,7 @@
     left: 0;
     width: 100%;
     height: 80px;
-    background: rgba(23, 29, 55, 0.80); /* changed to 80% opacity */
+    background: rgba(23, 29, 55, 0.70);
     border-bottom: 2px solid #5d2ebf;
     display: flex;
     justify-content: space-between;
@@ -15,29 +15,30 @@
     padding: 0 25px;
     box-sizing: border-box;
     z-index: 999;
-    transition: height 0.25s ease,
+
+    /* Smooth animations */
+    transition: height 0.25s ease, 
                 background 0.25s ease,
                 box-shadow 0.25s ease;
 }
 
-/* Drop shadow on scroll up */
+/* Drop shadow */
 .app-header.scrolled-up {
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.35);
 }
 
-/* Shrink header when scrolling */
+/* Shrink when scrolling */
 .app-header.shrink {
     height: 60px;
 }
 
-/* Logo — increased to 2.5× original (was 50px → now 125px) */
+/* Logo */
 .header-logo {
     height: 125px;
     width: auto;
     transition: height 0.25s ease;
 }
 
-/* Shrink state maintains proportional scaling */
 .app-header.shrink .header-logo {
     height: 90px;
 }
@@ -57,6 +58,14 @@
 
 /* Body offset so content doesn't hide under header */
 body {
+    margin-top: 80px;
+}
+
+
+/* ------------------------------------------------------------
+   GLOBAL LAYOUT
+------------------------------------------------------------ */
+body {
     margin: 0;
     padding: 150px 30px 30px; /* increased top padding */
     background: #171d37;
@@ -65,21 +74,6 @@ body {
         "Apple Color Emoji", "Segoe UI Emoji",
         "Segoe UI Symbol", "Noto Color Emoji";
     text-align: center;
-}
-
-
-/* ------------------------------------------------------------
-   GLOBAL LAYOUT
------------------------------------------------------------- */
-body {
-    background: #171d37;
-    color: #fefffe;
-    font-family: ui-sans-serif, system-ui, sans-serif, 
-        "Apple Color Emoji", "Segoe UI Emoji", 
-        "Segoe UI Symbol", "Noto Color Emoji";
-    text-align: center;
-    margin: 0;
-    padding: 30px;
 }
 
 /* Center everything */

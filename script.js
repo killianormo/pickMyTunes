@@ -17,6 +17,27 @@ function hideSpinner() {
   document.getElementById("spinner").style.display = "none";
 }
 
+
+/* ------------------------------------------------------------
+   Dot animation & Show/Hide Logic
+------------------------------------------------------------ */
+let loadingInterval;
+
+function startLoadingAnimation() {
+    const dots = document.getElementById("loadingDots");
+    let dotCount = 1;
+
+    loadingInterval = setInterval(() => {
+        dotCount = (dotCount % 3) + 1; // cycles 1 → 2 → 3 → 1
+        dots.textContent = ".".repeat(dotCount);
+    }, 500);
+}
+
+function stopLoadingAnimation() {
+    clearInterval(loadingInterval);
+}
+
+
 /* ------------------------------------------------------------
    PKCE HELPERS
 ------------------------------------------------------------ */
@@ -147,19 +168,26 @@ async function init() {
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
 
-  if (code) {
+if (code) {
     document.getElementById("loginBtn").style.display = "none";
 
     const tokenData = await getAccessToken(code);
     accessToken = tokenData.access_token;
 
-    showSpinner();
+    // Show the animated “Finding your albums…” message
+    document.getElementById("loadingMessage").style.display = "block";
+    startLoadingAnimation();
+
+    // Fetch albums
     savedAlbums = await fetchSavedAlbums(accessToken);
-    hideSpinner();
 
+    // Stop message and hide it
+    stopLoadingAnimation();
+    document.getElementById("loadingMessage").style.display = "none";
 
+    // Show the pick button
     document.getElementById("pickBtn").style.display = "inline-block";
-  }
+   }
 }
 
 document.getElementById("pickBtn").onclick = () => {

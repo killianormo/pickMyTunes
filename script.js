@@ -206,10 +206,4 @@ if (code) {
    }
 }
 
-document.getElementById("pickBtn").onclick = () => {
-  const selected = pickRandomAlbums(savedAlbums, albumCountToPick);
-  displayAlbums(selected);
-};
-
-
 init();

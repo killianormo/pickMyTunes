@@ -189,7 +189,7 @@ if (code) {
     accessToken = tokenData.access_token;
 
     // Show loading message
-    document.getElementById("loadingMessage").style.display = "block";
+    document.getElementById("loadingTile").style.display = "block";
     startLoadingAnimation();
 
     // Fetch albums
@@ -197,7 +197,7 @@ if (code) {
 
     // Stop loading
     stopLoadingAnimation();
-    document.getElementById("loadingMessage").style.display = "none";
+    document.getElementById("loadingTile").style.display = "none";
 
     // Automatically pick albums on first load
     const initiallySelected = pickRandomAlbums(savedAlbums, albumCountToPick);

@@ -206,6 +206,11 @@ if (code) {
     // Show the new dynamic button
     document.getElementById("pickMoreBtn").style.display = "inline-block";
    }
+else {
+  // No "code" in URL – clear stale verifier
+  localStorage.removeItem("verifier");
+}
+
 }
 
 init();

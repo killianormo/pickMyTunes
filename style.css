@@ -78,3 +78,17 @@ a:hover {
 ------------------------------------------------------------ */
 #spinner {
   display: none;  /* JS toggles this*
+
+
+/* ------------------------------------------------------------
+   Loading Message
+------------------------------------------------------------ */
+.loading-message {
+    color: #fefffe;
+    font-size: 1.2rem;
+    margin-top: 20px;
+    font-family: ui-sans-serif, system-ui, sans-serif, 
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    text-align: center;
+}
+

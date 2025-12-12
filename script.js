@@ -2,7 +2,7 @@
    CONFIG
 ------------------------------------------------------------ */
 const clientId = "a92e23077bdb4eed8e9f6e3e8b35b374";  
-const redirectUri = window.location.origin + window.location.pathname;
+const redirectUri = "https://killianormo.github.io/pickMyTunes/";
 const albumCountToPick = 3;
 
 /* ------------------------------------------------------------

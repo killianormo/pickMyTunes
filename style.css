@@ -56,18 +56,18 @@
     color: #5d2ebf;
 }
 
-/* Body offset so content doesn't hide under header */
+//* Body offset so content doesn't hide under header 
 body {
     margin-top: 400px;
 }
-
+*/
 
 /* ------------------------------------------------------------
    GLOBAL LAYOUT
 ------------------------------------------------------------ */
 body {
     margin: 0;
-    padding: 150px 30px 30px; /* increased top padding */
+    padding: 280px 30px 30px; /* increased top padding */
     background: #171d37;
     color: #fefffe;
     font-family: ui-sans-serif, system-ui, sans-serif,

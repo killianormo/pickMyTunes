@@ -42,10 +42,10 @@ button:hover {
 }
 
 /* ------------------------------------------------------------
-   LOADING MESSAGE (styled like a button)
+   LOADING MESSAGE
 ------------------------------------------------------------ */
 .loading-message {
-    display: inline-block;   /* <— prevents full-width stretch */
+    display: inline-block; 
     background: #5d2ebf;
     color: #ffffff;
     border-radius: 8px;
@@ -56,7 +56,6 @@ button:hover {
     text-align: center;
 }
 
-/* Dot animation keeps the text aligned */
 #loadingDots {
     display: inline-block;
     width: 20px;

@@ -6,7 +6,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 140px;
+    height: 80px;
     background: rgba(23, 29, 55, 0.70);
     border-bottom: 2px solid #5d2ebf;
     display: flex;
@@ -40,7 +40,7 @@
 }
 
 .app-header.shrink .header-logo {
-    height: 110px;
+    height: 90px;
 }
 
 /* "Home" link */
@@ -56,7 +56,11 @@
     color: #5d2ebf;
 }
 
-
+//* Body offset so content doesn't hide under header 
+body {
+    margin-top: 400px;
+}
+*/
 
 /* ------------------------------------------------------------
    GLOBAL LAYOUT
@@ -104,18 +108,6 @@ button:hover {
 /* ------------------------------------------------------------
    LOADING TILE
 ------------------------------------------------------------ */
-.loading-message {
-    display: inline-block; 
-    background: #5d2ebf;
-    color: #ffffff;
-    border-radius: 8px;
-    padding: 12px 25px;
-    font-size: 16px;
-    margin-top: 20px;
-    font-weight: 500;
-    text-align: center;
-}
-
 .loading-tile {
     width: 256px;
     background: #22294d;

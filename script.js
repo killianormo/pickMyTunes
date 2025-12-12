@@ -1,7 +1,7 @@
 /* ------------------------------------------------------------
    CONFIG
 ------------------------------------------------------------ */
-const clientId = a92e23077bdb4eed8e9f6e3e8b35b374;  
+const clientId = "a92e23077bdb4eed8e9f6e3e8b35b374";  
 const redirectUri = window.location.origin + window.location.pathname;
 const albumCountToPick = 3;
 

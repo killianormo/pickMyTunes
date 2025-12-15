@@ -125,6 +125,30 @@ async function exchangeTidalToken(code) {
     return res.json();
 }
 
+/* ------------------------------------------------------------
+   LOADING DOT ANIMATION
+------------------------------------------------------------ */
+let loadingInterval = null;
+
+function startLoadingAnimation() {
+    const dots = document.getElementById("loadingDots");
+    if (!dots) return;
+
+    let count = 1;
+
+    loadingInterval = setInterval(() => {
+        dots.textContent = ".".repeat(count);
+        count = count === 3 ? 1 : count + 1;
+    }, 500);
+}
+
+function stopLoadingAnimation() {
+    if (loadingInterval) {
+        clearInterval(loadingInterval);
+        loadingInterval = null;
+    }
+}
+
 
 /* ------------------------------------------------------------
    FETCH & NORMALIZE ALBUMS
@@ -217,18 +241,64 @@ function displayAlbums(list) {
    LOADING UI
 ------------------------------------------------------------ */
 function showLoading() {
-    document.getElementById("loadingTile")?.style.setProperty("display", "block");
+    const tile = document.getElementById("loadingTile");
+    if (tile) tile.style.display = "block";
+    startLoadingAnimation();
 }
 
 function hideLoading() {
-    document.getElementById("loadingTile")?.style.setProperty("display", "none");
+    const tile = document.getElementById("loadingTile");
+    if (tile) tile.style.display = "none";
+    stopLoadingAnimation();
 }
-
 
 /* ------------------------------------------------------------
    INIT
 ------------------------------------------------------------ */
 let cachedAlbums = [];
+
+function handleSourceVisibility() {
+    const sourceSelector = document.getElementById("sourceSelector");
+    if (!sourceSelector) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const hasCode = params.has("code");
+    const source = localStorage.getItem("musicSource");
+
+    // Show ONLY on true home page
+    if (!hasCode && !source) {
+        sourceSelector.style.display = "block";
+    } else {
+        sourceSelector.style.display = "none";
+    }
+}
+
+async function init() {
+    handleSourceVisibility();
+
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    const source = localStorage.getItem("musicSource");
+
+    if (!code || !source) return;
+
+    showLoading();
+
+    if (source === "spotify") {
+        const token = await exchangeSpotifyToken(code);
+        cachedAlbums = await fetchSpotifyAlbums(token.access_token);
+    }
+
+    if (source === "tidal") {
+        const token = await exchangeTidalToken(code);
+        cachedAlbums = await fetchTidalAlbums(token.access_token);
+    }
+
+    hideLoading();
+
+    const picked = pickRandomAlbums(cachedAlbums, albumCountToPick);
+    displayAlbums(picked);
+}
 
 async function init() {
     const params = new URLSearchParams(window.location.search);

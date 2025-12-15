@@ -1,101 +1,77 @@
 /* ------------------------------------------------------------
    CONFIG
 ------------------------------------------------------------ */
-const clientId = "a92e23077bdb4eed8e9f6e3e8b35b374";  
-const redirectUri = "https://killianormo.github.io/pickMyTunes/";
+const spotifyClientId = "a92e23077bdb4eed8e9f6e3e8b35b374";
+const tidalClientId   = "FmWv0A27XqBaqknR";
+const redirectUri     = "https://killianormo.github.io/pickMyTunes/";
 const albumCountToPick = 3;
 
+
 /* ------------------------------------------------------------
-   PKCE HELPERS
+   PKCE HELPERS (Spotify)
 ------------------------------------------------------------ */
 async function generateCodeVerifier(length = 64) {
-  let text = "";
-  let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
-  for (let i = 0; i < length; i++) text += possible.charAt(Math.random() * possible.length | 0);
-  return text;
+    let text = "";
+    let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+    for (let i = 0; i < length; i++) {
+        text += possible.charAt(Math.random() * possible.length | 0);
+    }
+    return text;
 }
 
 async function generateCodeChallenge(verifier) {
-  const data = new TextEncoder().encode(verifier);
-  const digest = await crypto.subtle.digest("SHA-256", data);
-  return btoa(String.fromCharCode(...new Uint8Array(digest)))
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    const data = new TextEncoder().encode(verifier);
+    const digest = await crypto.subtle.digest("SHA-256", data);
+    return btoa(String.fromCharCode(...new Uint8Array(digest)))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/, "");
 }
 
+
 /* ------------------------------------------------------------
-   SELECT SOURCE
+   SOURCE SELECTION
 ------------------------------------------------------------ */
+let selectedSource = localStorage.getItem("musicSource");
 
-let selectedSource = null;
+const spotifyTile = document.getElementById("spotifySource");
+const tidalTile   = document.getElementById("tidalSource");
 
-document.getElementById("spotifySource").onclick = () => {
-    selectedSource = "spotify";
-    localStorage.setItem("musicSource", "spotify");
-    loginSpotify();
-};
-
-document.getElementById("tidalSource").onclick = () => {
-    selectedSource = "tidal";
-    localStorage.setItem("musicSource", "tidal");
-    loginTidal();
-};
-
-
-/* ------------------------------------------------------------
-   SPINNERS
------------------------------------------------------------- */
-
-function showSpinner() {
-  document.getElementById("spinner").style.display = "block";
+if (spotifyTile) {
+    spotifyTile.onclick = () => {
+        localStorage.setItem("musicSource", "spotify");
+        loginSpotify();
+    };
 }
 
-function hideSpinner() {
-  document.getElementById("spinner").style.display = "none";
+if (tidalTile) {
+    tidalTile.onclick = () => {
+        localStorage.setItem("musicSource", "tidal");
+        loginTidal();
+    };
 }
 
 
 /* ------------------------------------------------------------
-   Dot animation & Show/Hide Logic
------------------------------------------------------------- */
-let loadingInterval;
-
-function startLoadingAnimation() {
-    const dots = document.getElementById("loadingDots");
-    let dotCount = 1;
-
-    loadingInterval = setInterval(() => {
-        dotCount = (dotCount % 3) + 1; // cycles 1 → 2 → 3 → 1
-        dots.textContent = ".".repeat(dotCount);
-    }, 500);
-}
-
-function stopLoadingAnimation() {
-    clearInterval(loadingInterval);
-}
-
-
-/* ------------------------------------------------------------
-   LOGIN
+   LOGIN FLOWS
 ------------------------------------------------------------ */
 async function loginSpotify() {
-  const verifier = await generateCodeVerifier();
-  const challenge = await generateCodeChallenge(verifier);
+    const verifier  = await generateCodeVerifier();
+    const challenge = await generateCodeChallenge(verifier);
 
-  localStorage.setItem("verifier", verifier);
+    localStorage.setItem("verifier", verifier);
 
-  const params = new URLSearchParams({
-    client_id: clientId,
-    response_type: "code",
-    redirect_uri: redirectUri,
-    code_challenge_method: "S256",
-    code_challenge: challenge,
-    scope: "user-library-read"
-  });
+    const params = new URLSearchParams({
+        client_id: spotifyClientId,
+        response_type: "code",
+        redirect_uri: redirectUri,
+        code_challenge_method: "S256",
+        code_challenge: challenge,
+        scope: "user-library-read"
+    });
 
-  window.location = "https://accounts.spotify.com/authorize?" + params.toString();
+    window.location = "https://accounts.spotify.com/authorize?" + params.toString();
 }
-
-const tidalClientId = "FmWv0A27XqBaqknR";
 
 function loginTidal() {
     const params = new URLSearchParams({
@@ -112,148 +88,191 @@ function loginTidal() {
 /* ------------------------------------------------------------
    TOKEN EXCHANGE
 ------------------------------------------------------------ */
-async function getAccessToken(code) {
-  const verifier = localStorage.getItem("verifier");
+async function exchangeSpotifyToken(code) {
+    const verifier = localStorage.getItem("verifier");
 
-  const body = new URLSearchParams({
-    client_id: clientId,
-    grant_type: "authorization_code",
-    code,
-    redirect_uri: redirectUri,
-    code_verifier: verifier
-  });
-
-  const response = await fetch("https://accounts.spotify.com/api/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body
-  });
-
-  return response.json();
-}
-
-
-/* ------------------------------------------------------------
-   Handle Pick More button
------------------------------------------------------------- */
-document.getElementById("pickMoreBtn").onclick = () => {
-  const selected = pickRandomAlbums(savedAlbums, albumCountToPick);
-  displayAlbums(selected);
-};
-
-/* ------------------------------------------------------------
-   FETCH SAVED ALBUMS
------------------------------------------------------------- */
-async function fetchSavedAlbums(accessToken) {
-  let albums = [];
-  let url = "https://api.spotify.com/v1/me/albums?limit=50";
-
-  while (url) {
-    const response = await fetch(url, {
-      headers: { Authorization: "Bearer " + accessToken }
+    const body = new URLSearchParams({
+        client_id: spotifyClientId,
+        grant_type: "authorization_code",
+        code,
+        redirect_uri: redirectUri,
+        code_verifier: verifier
     });
 
-    const data = await response.json();
-    albums = albums.concat(data.items);
-    url = data.next;
-  }
+    const res = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body
+    });
 
-  return albums;
+    return res.json();
 }
 
+async function exchangeTidalToken(code) {
+    const body = new URLSearchParams({
+        client_id: tidalClientId,
+        grant_type: "authorization_code",
+        code,
+        redirect_uri: redirectUri
+    });
+
+    const res = await fetch("https://auth.tidal.com/v1/oauth2/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body
+    });
+
+    return res.json();
+}
+
+
 /* ------------------------------------------------------------
-   RANDOM SELECTION
+   FETCH & NORMALIZE ALBUMS
+------------------------------------------------------------ */
+
+/* Spotify */
+async function fetchSpotifyAlbums(token) {
+    let albums = [];
+    let url = "https://api.spotify.com/v1/me/albums?limit=50";
+
+    while (url) {
+        const res = await fetch(url, {
+            headers: { Authorization: "Bearer " + token }
+        });
+        const data = await res.json();
+        albums = albums.concat(data.items);
+        url = data.next;
+    }
+
+    return albums.map(item => ({
+        title: item.album.name,
+        artist: item.album.artists.map(a => a.name).join(", "),
+        image: item.album.images[0]?.url,
+        link: item.album.external_urls.spotify
+    }));
+}
+
+/* Tidal */
+async function fetchTidalAlbums(token) {
+    const res = await fetch("https://api.tidal.com/v1/users/me/albums", {
+        headers: { Authorization: "Bearer " + token }
+    });
+
+    const data = await res.json();
+
+    return data.items.map(item => ({
+        title: item.album.title,
+        artist: item.album.artist.name,
+        image: item.album.cover
+            ? `https://resources.tidal.com/images/${item.album.cover.replace(/-/g, "/")}/640x640.jpg`
+            : "",
+        link: item.album.url
+    }));
+}
+
+
+/* ------------------------------------------------------------
+   RANDOM PICK
 ------------------------------------------------------------ */
 function pickRandomAlbums(list, count) {
-  let arr = [...list];
-  let chosen = [];
+    let pool = [...list];
+    let chosen = [];
 
-  for (let i = 0; i < count; i++) {
-    let index = Math.floor(Math.random() * arr.length);
-    chosen.push(arr[index]);
-    arr.splice(index, 1); // no duplicates
-  }
-
-  return chosen;
+    for (let i = 0; i < count && pool.length; i++) {
+        const index = Math.floor(Math.random() * pool.length);
+        chosen.push(pool[index]);
+        pool.splice(index, 1);
+    }
+    return chosen;
 }
 
+
 /* ------------------------------------------------------------
-   DISPLAY RESULTS
+   DISPLAY
 ------------------------------------------------------------ */
 function displayAlbums(list) {
-  const div = document.getElementById("results");
-  div.innerHTML = "";
+    const results = document.getElementById("results");
+    results.innerHTML = "";
 
-  list.forEach(item => {
-    const alb = item.album;
+    list.forEach(alb => {
+        results.innerHTML += `
+            <div class="album">
+                <img src="${alb.image}">
+                <h3>${alb.title}</h3>
+                <p>${alb.artist}</p>
+                <a href="${alb.link}" target="_blank">Open</a>
+            </div>
+        `;
+    });
 
-    div.innerHTML += `
-      <div class="album">
-        <img src="${alb.images[0].url}">
-        <h3>${alb.name}</h3>
-        <p>${alb.artists.map(a => a.name).join(", ")}</p>
-        <a href="${alb.external_urls.spotify}" target="_blank">Open in Spotify</a>
-      </div>
-    `;
-  });
+    const pickMoreBtn = document.getElementById("pickMoreBtn");
+    if (pickMoreBtn) {
+        pickMoreBtn.textContent = `Pick ${albumCountToPick} More!`;
+        pickMoreBtn.style.display = "inline-block";
+    }
+}
 
-  // Update the button text dynamically
-  const pickMoreBtn = document.getElementById("pickMoreBtn");
-  pickMoreBtn.textContent = `Pick ${albumCountToPick} More!`;
+
+/* ------------------------------------------------------------
+   LOADING UI
+------------------------------------------------------------ */
+function showLoading() {
+    document.getElementById("loadingTile")?.style.setProperty("display", "block");
+}
+
+function hideLoading() {
+    document.getElementById("loadingTile")?.style.setProperty("display", "none");
 }
 
 
 /* ------------------------------------------------------------
    INIT
 ------------------------------------------------------------ */
-document.getElementById("loginBtn").onclick = login;
-
-let accessToken = null;
-let savedAlbums = [];
+let cachedAlbums = [];
 
 async function init() {
-  const params = new URLSearchParams(window.location.search);
-  const code = params.get("code");
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    const source = localStorage.getItem("musicSource");
 
-const source = localStorage.getItem("musicSource");
+    if (!code || !source) return;
 
-if (code && source === "spotify") {
-    document.getElementById("loginBtn").style.display = "none";
+    showLoading();
 
-    const tokenData = await getAccessToken(code);
-    accessToken = tokenData.access_token;
+    if (source === "spotify") {
+        const token = await exchangeSpotifyToken(code);
+        cachedAlbums = await fetchSpotifyAlbums(token.access_token);
+    }
 
-    // Show loading message
-    document.getElementById("loadingTile").style.display = "block";
-    startLoadingAnimation();
+    if (source === "tidal") {
+        const token = await exchangeTidalToken(code);
+        cachedAlbums = await fetchTidalAlbums(token.access_token);
+    }
 
-    // Fetch albums
-    savedAlbums = await fetchSavedAlbums(accessToken);
+    hideLoading();
 
-    // Stop loading
-    stopLoadingAnimation();
-    document.getElementById("loadingTile").style.display = "none";
-
-    // Automatically pick albums on first load
-    const initiallySelected = pickRandomAlbums(savedAlbums, albumCountToPick);
-    displayAlbums(initiallySelected);
-
-    // Show the new dynamic button
-    document.getElementById("pickMoreBtn").style.display = "inline-block";
-   }
-else {
-    // No "code" in URL – clear stale verifier
-    localStorage.removeItem("verifier");
-   }
-
+    const picked = pickRandomAlbums(cachedAlbums, albumCountToPick);
+    displayAlbums(picked);
 }
 
 init();
 
+
+/* ------------------------------------------------------------
+   PICK MORE
+------------------------------------------------------------ */
+const pickMoreBtn = document.getElementById("pickMoreBtn");
+if (pickMoreBtn) {
+    pickMoreBtn.onclick = () => {
+        const picked = pickRandomAlbums(cachedAlbums, albumCountToPick);
+        displayAlbums(picked);
+    };
+}
+
+
 /* ------------------------------------------------------------
    HEADER SCROLL LOGIC
 ------------------------------------------------------------ */
-
 const header = document.querySelector(".app-header");
 
 if (header) {
@@ -262,17 +281,8 @@ if (header) {
     window.addEventListener("scroll", () => {
         const current = window.scrollY;
 
-        if (current > 20) {
-            header.classList.add("shrink");
-        } else {
-            header.classList.remove("shrink");
-        }
-
-        if (current < lastScroll) {
-            header.classList.add("scrolled-up");
-        } else {
-            header.classList.remove("scrolled-up");
-        }
+        header.classList.toggle("shrink", current > 20);
+        header.classList.toggle("scrolled-up", current < lastScroll);
 
         lastScroll = current;
     });

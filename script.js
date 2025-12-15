@@ -73,17 +73,24 @@ async function loginSpotify() {
     window.location = "https://accounts.spotify.com/authorize?" + params.toString();
 }
 
-function loginTidal() {
+async function loginTidal() {
+    const verifier = await generateCodeVerifier();
+    const challenge = await generateCodeChallenge(verifier);
+
+    localStorage.setItem("tidal_verifier", verifier);
+
     const params = new URLSearchParams({
         client_id: tidalClientId,
         response_type: "code",
         redirect_uri: redirectUri,
-        scope: "r_usr+w_usr"
+        code_challenge_method: "S256",
+        code_challenge: challenge,
+        scope: "r_usr w_usr",   // IMPORTANT: space-separated, not +
     });
 
-    window.location = "https://login.tidal.com/authorize?" + params.toString();
+    window.location =
+        "https://login.tidal.com/authorize?" + params.toString();
 }
-
 
 /* ------------------------------------------------------------
    TOKEN EXCHANGE
@@ -109,16 +116,21 @@ async function exchangeSpotifyToken(code) {
 }
 
 async function exchangeTidalToken(code) {
+    const verifier = localStorage.getItem("tidal_verifier");
+
     const body = new URLSearchParams({
         client_id: tidalClientId,
         grant_type: "authorization_code",
         code,
-        redirect_uri: redirectUri
+        redirect_uri: redirectUri,
+        code_verifier: verifier
     });
 
     const res = await fetch("https://auth.tidal.com/v1/oauth2/token", {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
         body
     });
 

@@ -300,31 +300,6 @@ async function init() {
     displayAlbums(picked);
 }
 
-async function init() {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-    const source = localStorage.getItem("musicSource");
-
-    if (!code || !source) return;
-
-    showLoading();
-
-    if (source === "spotify") {
-        const token = await exchangeSpotifyToken(code);
-        cachedAlbums = await fetchSpotifyAlbums(token.access_token);
-    }
-
-    if (source === "tidal") {
-        const token = await exchangeTidalToken(code);
-        cachedAlbums = await fetchTidalAlbums(token.access_token);
-    }
-
-    hideLoading();
-
-    const picked = pickRandomAlbums(cachedAlbums, albumCountToPick);
-    displayAlbums(picked);
-}
-
 init();
 
 

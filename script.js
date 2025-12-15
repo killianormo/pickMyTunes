@@ -209,27 +209,32 @@ async function fetchTidalAlbums(token) {
 
 async function fetchTidalAlbums(token) {
     const url =
-        "https://openapi.tidal.com/v2/albums" +
+        "https://openapi.tidal.com/v2/my-collection/albums" +
         "?limit=50" +
-        "&countryCode=GB" +
-        "&include=artists";
+        "&countryCode=GB";
 
     const res = await fetch(url, {
         headers: {
-            Authorization: "Bearer " + token
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json"
         }
     });
 
     if (!res.ok) {
-        console.error("Tidal fetch failed:", await res.text());
+        const err = await res.text();
+        console.error("Tidal fetch error:", err);
         return [];
     }
 
     const data = await res.json();
-    console.log("Tidal v2 albums response:", data);
+    console.log("TIDAL RAW RESPONSE:", data);
 
-    return data.data.map(item => {
-        const album = item.attributes;
+    if (!data.data || !Array.isArray(data.data)) {
+        return [];
+    }
+
+    return data.data.map(entry => {
+        const album = entry.attributes;
 
         return {
             title: album.title,

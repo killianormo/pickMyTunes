@@ -208,21 +208,38 @@ async function fetchTidalAlbums(token) {
 */
 
 async function fetchTidalAlbums(token) {
-    const res = await fetch(
-        "https://api.tidal.com/v1/collections/albums?limit=50&countryCode=GB",
-        {
-            headers: {
-                Authorization: "Bearer " + token
-            }
+    const url =
+        "https://openapi.tidal.com/v2/albums" +
+        "?limit=50" +
+        "&countryCode=GB" +
+        "&include=artists";
+
+    const res = await fetch(url, {
+        headers: {
+            Authorization: "Bearer " + token
         }
-    );
+    });
+
+    if (!res.ok) {
+        console.error("Tidal fetch failed:", await res.text());
+        return [];
+    }
 
     const data = await res.json();
+    console.log("Tidal v2 albums response:", data);
 
-    console.log("TIDAL RAW RESPONSE:", data);
+    return data.data.map(item => {
+        const album = item.attributes;
 
-    return [];
+        return {
+            title: album.title,
+            artist: album.artistName,
+            image: album.imageLinks?.[0]?.href ?? "",
+            link: album.url
+        };
+    });
 }
+
 
 
 /* ------------------------------------------------------------

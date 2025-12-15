@@ -188,7 +188,7 @@ async function fetchSpotifyAlbums(token) {
     }));
 }
 
-/* Tidal */
+/* Tidal 
 async function fetchTidalAlbums(token) {
     const res = await fetch("https://api.tidal.com/v1/users/me/albums", {
         headers: { Authorization: "Bearer " + token }
@@ -204,6 +204,24 @@ async function fetchTidalAlbums(token) {
             : "",
         link: item.album.url
     }));
+}
+*/
+
+async function fetchTidalAlbums(token) {
+    const res = await fetch(
+        "https://api.tidal.com/v1/collections/albums?limit=50&countryCode=GB",
+        {
+            headers: {
+                Authorization: "Bearer " + token
+            }
+        }
+    );
+
+    const data = await res.json();
+
+    console.log("TIDAL RAW RESPONSE:", data);
+
+    return [];
 }
 
 

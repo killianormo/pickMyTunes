@@ -264,6 +264,7 @@ function handleSourceVisibility() {
 
     const params = new URLSearchParams(window.location.search);
     const hasCode = params.has("code");
+    const source = localStorage.getItem("musicSource");
 
     // Show ONLY when there is NO auth code yet
     if (!hasCode) {

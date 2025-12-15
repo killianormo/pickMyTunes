@@ -73,6 +73,15 @@ async function loginSpotify() {
     window.location = "https://accounts.spotify.com/authorize?" + params.toString();
 }
 
+fetch("https://pickmytunes-backend.<yourname>.workers.dev/sync/spotify", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    accessToken: "<SPOTIFY_ACCESS_TOKEN>",
+    userId: "<SPOTIFY_USER_ID>"
+  })
+});
+
 async function loginTidal() {
     const verifier = await generateCodeVerifier();
     const challenge = await generateCodeChallenge(verifier);

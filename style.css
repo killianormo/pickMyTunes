@@ -524,3 +524,7 @@ body {
     transform: scale(1.05);
     box-shadow: 0 10px 22px rgba(0, 0, 0, 0.45);
 }
+
+#sourceSelector {
+    display: none;
+}

@@ -14,6 +14,20 @@
 <body>
     <h1>Pick My Tunes</h1>
 
+    <div id="sourceSelector" class="source-selector">
+        <h2>Select your source</h2>
+    
+        <div class="source-grid">
+            <div class="source-tile spotify" id="spotifySource">
+                <img src="assets/Spotify_Full_Logo_RGB_White.png" alt="Spotify">
+            </div>
+    
+            <div class="source-tile tidal" id="tidalSource">
+                <img src="assets/tidal-wide-white-rgb.png" alt="Tidal">
+            </div>
+        </div>
+    </div>
+
     <div id="loadingTile" class="loading-tile" style="display: none;">
         <div class="loading-top">
             <img src="assets/logoV1.png" class="loading-logo" alt="Loading Logo">
@@ -24,7 +38,6 @@
         </div>
     </div>
 
-    <button id="loginBtn">Sign in with Spotify</button>
     <button id="pickMoreBtn" style="display:none;"></button>
     
     <div id="spinner"></div>

@@ -294,3 +294,95 @@ button:hover {
     from { transform: rotate(0deg); }
     to   { transform: rotate(360deg); }
 }
+
+/* ------------------------------------------------------------
+   MOBILE RESPONSIVENESS
+------------------------------------------------------------ */
+@media (max-width: 768px) {
+
+    /* HEADER */
+    .app-header {
+        height: 110px;
+        padding: 0 18px;
+    }
+
+    .header-logo {
+        height: 90px;
+    }
+
+    .app-header.shrink {
+        height: 80px;
+    }
+
+    .app-header.shrink .header-logo {
+        height: 70px;
+    }
+
+    .header-home {
+        font-size: 16px;
+    }
+
+    /* BODY OFFSET */
+    body {
+        padding: 190px 20px 30px;
+    }
+
+    /* LOADING TILE */
+    .loading-tile {
+        width: 90%;
+        max-width: 320px;
+        height: 320px;
+    }
+
+    .loading-bottom {
+        font-size: 18px;
+        padding: 0 10px;
+    }
+
+    /* BUTTONS */
+    button {
+        font-size: 18px;
+        padding: 14px 28px;
+        width: 100%;
+        max-width: 320px;
+    }
+
+    /* RESULTS GRID */
+    #results {
+        gap: 20px;
+    }
+
+    .album {
+        width: 90%;
+        max-width: 320px;
+        padding: 20px;
+    }
+
+    .album h3 {
+        font-size: 18px;
+    }
+
+    .album p {
+        font-size: 15px;
+    }
+
+    .album a {
+        font-size: 16px;
+        padding: 10px 16px;
+    }
+}
+
+@media (max-width: 420px) {
+
+    .loading-tile {
+        height: 300px;
+    }
+
+    .header-logo {
+        height: 80px;
+    }
+
+    button {
+        font-size: 17px;
+    }
+}

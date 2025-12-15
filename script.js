@@ -85,7 +85,7 @@ async function loginTidal() {
         redirect_uri: redirectUri,
         code_challenge_method: "S256",
         code_challenge: challenge,
-        scope: "r_usr w_usr",   // IMPORTANT: space-separated, not +
+        scope: "collection.read collection.write"
     });
 
     window.location =

@@ -210,19 +210,20 @@ async function fetchTidalAlbums(token) {
 async function fetchTidalAlbums(token) {
     const url =
         "https://openapi.tidal.com/v2/my-collection/albums" +
-        "?limit=50" +
+        "?filter[userId]=me" +
+        "&limit=50" +
         "&countryCode=GB";
 
     const res = await fetch(url, {
         headers: {
             Authorization: "Bearer " + token,
-            "Content-Type": "application/json"
+            Accept: "application/vnd.api+json"
         }
     });
 
     if (!res.ok) {
         const err = await res.text();
-        console.error("Tidal fetch error:", err);
+        console.error("Tidal fetch failed:", err);
         return [];
     }
 
@@ -244,8 +245,6 @@ async function fetchTidalAlbums(token) {
         };
     });
 }
-
-
 
 /* ------------------------------------------------------------
    RANDOM PICK

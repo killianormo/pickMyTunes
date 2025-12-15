@@ -210,13 +210,13 @@ async function fetchTidalAlbums(token) {
 async function fetchTidalAlbums(token) {
     const url =
         "https://openapi.tidal.com/v2/my-collection/albums" +
-        "?filter[userId]=me" +
-        "&limit=50" +
+        "?limit=50" +
         "&countryCode=GB";
 
     const res = await fetch(url, {
         headers: {
             Authorization: "Bearer " + token,
+            "X-Tidal-Token": tidalClientId,
             Accept: "application/vnd.api+json"
         }
     });

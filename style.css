@@ -472,3 +472,55 @@ body {
         width: 260px;
     }
 }
+
+/* ------------------------------------------------------------
+   SOURCE SELECTOR
+------------------------------------------------------------ */
+.source-selector {
+    margin-top: 40px;
+}
+
+.source-selector h2 {
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.source-grid {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.source-tile {
+    width: 256px;
+    height: 256px;
+    background: #474b60;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    transition:
+        background 0.3s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.source-tile img {
+    max-width: 70%;
+    height: auto;
+}
+
+.source-tile.spotify:hover {
+    background: #1dd860;
+    transform: scale(1.05);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.45);
+}
+
+.source-tile.tidal:hover {
+    background-image: linear-gradient(to top right, black, grey);
+    transform: scale(1.05);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.45);
+}

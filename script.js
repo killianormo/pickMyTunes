@@ -241,6 +241,7 @@ function displayAlbums(list) {
    LOADING UI
 ------------------------------------------------------------ */
 function showLoading() {
+    document.getElementById("sourceSelector")?.style.setProperty("display", "none");
     const tile = document.getElementById("loadingTile");
     if (tile) tile.style.display = "block";
     startLoadingAnimation();
@@ -263,15 +264,15 @@ function handleSourceVisibility() {
 
     const params = new URLSearchParams(window.location.search);
     const hasCode = params.has("code");
-    const source = localStorage.getItem("musicSource");
 
-    // Show ONLY on true home page
-    if (!hasCode && !source) {
+    // Show ONLY when there is NO auth code yet
+    if (!hasCode) {
         sourceSelector.style.display = "block";
     } else {
         sourceSelector.style.display = "none";
     }
 }
+
 
 async function init() {
     handleSourceVisibility();

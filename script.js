@@ -264,18 +264,27 @@ function handleSourceVisibility() {
 
     const params = new URLSearchParams(window.location.search);
     const hasCode = params.has("code");
-    const source = localStorage.getItem("musicSource");
 
-    // Show ONLY when there is NO auth code yet
-    if (!hasCode) {
+    const isHomePage =
+        window.location.pathname.endsWith("/") ||
+        window.location.pathname.endsWith("/index.html");
+
+    // Show selector ONLY on home page with no auth code
+    if (isHomePage && !hasCode) {
         sourceSelector.style.display = "block";
     } else {
         sourceSelector.style.display = "none";
     }
 }
 
+function resetToHome() {
+    document.getElementById("results")?.replaceChildren();
+    document.getElementById("pickMoreBtn")?.style.setProperty("display", "none");
+    document.getElementById("loadingTile")?.style.setProperty("display", "none");
+}
 
 async function init() {
+    resetToHome();
     handleSourceVisibility();
 
     const params = new URLSearchParams(window.location.search);

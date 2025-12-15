@@ -23,6 +23,25 @@ async function generateCodeChallenge(verifier) {
 }
 
 /* ------------------------------------------------------------
+   SELECT SOURCE
+------------------------------------------------------------ */
+
+let selectedSource = null;
+
+document.getElementById("spotifySource").onclick = () => {
+    selectedSource = "spotify";
+    localStorage.setItem("musicSource", "spotify");
+    loginSpotify();
+};
+
+document.getElementById("tidalSource").onclick = () => {
+    selectedSource = "tidal";
+    localStorage.setItem("musicSource", "tidal");
+    loginTidal();
+};
+
+
+/* ------------------------------------------------------------
    SPINNERS
 ------------------------------------------------------------ */
 
@@ -58,7 +77,7 @@ function stopLoadingAnimation() {
 /* ------------------------------------------------------------
    LOGIN
 ------------------------------------------------------------ */
-async function login() {
+async function loginSpotify() {
   const verifier = await generateCodeVerifier();
   const challenge = await generateCodeChallenge(verifier);
 
@@ -75,6 +94,20 @@ async function login() {
 
   window.location = "https://accounts.spotify.com/authorize?" + params.toString();
 }
+
+const tidalClientId = "FmWv0A27XqBaqknR";
+
+function loginTidal() {
+    const params = new URLSearchParams({
+        client_id: tidalClientId,
+        response_type: "code",
+        redirect_uri: redirectUri,
+        scope: "r_usr+w_usr"
+    });
+
+    window.location = "https://login.tidal.com/authorize?" + params.toString();
+}
+
 
 /* ------------------------------------------------------------
    TOKEN EXCHANGE
@@ -182,7 +215,9 @@ async function init() {
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
 
-if (code) {
+const source = localStorage.getItem("musicSource");
+
+if (code && source === "spotify") {
     document.getElementById("loginBtn").style.display = "none";
 
     const tokenData = await getAccessToken(code);
@@ -207,9 +242,9 @@ if (code) {
     document.getElementById("pickMoreBtn").style.display = "inline-block";
    }
 else {
-  // No "code" in URL – clear stale verifier
-  localStorage.removeItem("verifier");
-}
+    // No "code" in URL – clear stale verifier
+    localStorage.removeItem("verifier");
+   }
 
 }
 

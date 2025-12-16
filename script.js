@@ -58,7 +58,7 @@ document.getElementById("tidalSource")?.addEventListener("click", (e) => {
   e.preventDefault();
 
   // Optional: subtle feedback for mobile (no hover)
-  alert("TIDAL coming soon!");
+  alert("TIDAL coming soon. Spotify works today!");
 });
 
 

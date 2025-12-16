@@ -84,6 +84,9 @@ async function loginSpotify() {
 }
 
 /*
+Tidal Placeholder
+*/
+/*
 async function loginTidal() {
   const verifier  = await generateCodeVerifier();
   const challenge = await generateCodeChallenge(verifier);
@@ -284,11 +287,16 @@ function updatePickMoreButton() {
   const btn = document.getElementById("pickMoreBtn");
   if (!btn) return;
 
+  // Only show if albums exist
+  if (!Array.isArray(cachedAlbums) || cachedAlbums.length === 0) {
+    btn.style.display = "none";
+    return;
+  }
+
   btn.textContent = `Pick ${albumCountToPick} More!`;
   btn.style.display = "inline-block";
 }
 
-// Set button text immediately on page load (safe even if hidden in CSS)
 updatePickMoreButton();
 
 document.getElementById("pickMoreBtn")?.addEventListener("click", () => {

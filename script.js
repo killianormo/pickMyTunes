@@ -47,10 +47,20 @@ document.getElementById("spotifySource")?.addEventListener("click", () => {
   loginSpotify();
 });
 
+/*
 document.getElementById("tidalSource")?.addEventListener("click", () => {
   localStorage.setItem("musicSource", "tidal");
   loginTidal();
 });
+*/
+
+document.getElementById("tidalSource")?.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  // Optional: subtle feedback for mobile (no hover)
+  alert("TIDAL coming soon!");
+});
+
 
 /* ============================================================
    LOGIN FLOWS

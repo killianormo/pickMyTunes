@@ -545,3 +545,62 @@ body {
         max-width: 320px;
     }
 }
+
+/* ============================================================
+   MOBILE PORTRAIT — READABILITY IMPROVEMENTS
+============================================================ */
+@media (max-width: 640px) and (orientation: portrait) {
+
+    /* -----------------------------
+       HEADER
+    ----------------------------- */
+    .app-header {
+        height: 180px;
+        padding: 0 20px;
+    }
+
+    .header-logo {
+        height: 150px;
+    }
+
+    .header-home {
+        font-size: 20px;
+        padding: 14px 18px;
+    }
+
+    /* Push body down so content clears larger header */
+    body {
+        padding-top: 340px;
+    }
+
+    /* -----------------------------
+       ALBUM CARDS
+    ----------------------------- */
+    #results {
+        gap: 30px;
+    }
+
+    .album {
+        width: 92%;
+        max-width: 360px;
+        padding: 22px;
+    }
+
+    .album img {
+        width: 100%;
+        max-height: none;
+    }
+
+    .album h3 {
+        font-size: 18px;
+    }
+
+    .album p {
+        font-size: 15px;
+    }
+
+    .album a {
+        font-size: 15px;
+        padding: 10px 16px;
+    }
+}

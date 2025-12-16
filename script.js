@@ -57,7 +57,6 @@ document.getElementById("tidalSource")?.addEventListener("click", () => {
 document.getElementById("tidalSource")?.addEventListener("click", (e) => {
   e.preventDefault();
 
-  // Optional: subtle feedback for mobile (no hover)
   alert("TIDAL coming soon. Spotify works today!");
 });
 
@@ -84,6 +83,7 @@ async function loginSpotify() {
     "https://accounts.spotify.com/authorize?" + params.toString();
 }
 
+/*
 async function loginTidal() {
   const verifier  = await generateCodeVerifier();
   const challenge = await generateCodeChallenge(verifier);
@@ -102,6 +102,7 @@ async function loginTidal() {
   window.location =
     "https://login.tidal.com/authorize?" + params.toString();
 }
+*/
 
 /* ============================================================
    TOKEN EXCHANGE

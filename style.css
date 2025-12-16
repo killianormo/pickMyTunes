@@ -529,17 +529,20 @@ body {
     opacity: 0.25;
 }
 
-/* ------------------------------------------------------------
-   MOBILE LAYOUT
------------------------------------------------------------- */
+/* ============================================================
+   MOBILE — FORCE VERTICAL ALBUM STACK
+   (must be last to override all other media queries)
+============================================================ */
 @media (max-width: 640px) {
     #results {
-        flex-direction: column;
+        display: flex;
+        flex-direction: column !important;
+        flex-wrap: nowrap !important;
         align-items: center;
     }
 
     .album {
-        width: 90%;
+        width: 90% !important;
         max-width: 320px;
     }
 }

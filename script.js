@@ -297,6 +297,7 @@ function updatePickMoreButton() {
   btn.style.display = "inline-block";
 }
 
+displayAlbums(initiallySelected);
 updatePickMoreButton();
 
 document.getElementById("pickMoreBtn")?.addEventListener("click", () => {

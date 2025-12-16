@@ -280,10 +280,29 @@ function displayAlbums(list) {
 /* ============================================================
    PICK MORE
 ============================================================ */
+/*
 document.getElementById("pickMoreBtn")?.addEventListener("click", () => {
   displayAlbums(pickRandomAlbums(cachedAlbums, albumCountToPick));
   pickMoreBtn.textContent = `Pick ${albumCountToPick} More!`;
 });
+*/
+
+function updatePickMoreButton() {
+  const btn = document.getElementById("pickMoreBtn");
+  if (!btn) return;
+
+  btn.textContent = `Pick ${albumCountToPick} More`;
+  btn.style.display = "inline-block";
+}
+
+displayAlbums(initiallySelected);
+updatePickMoreButton();
+
+document.getElementById("pickMoreBtn").onclick = () => {
+  const selected = pickRandomAlbums(savedAlbums, albumCountToPick);
+  displayAlbums(selected);
+  updatePickMoreButton();
+};
 
 /* ============================================================
    HOME RESET

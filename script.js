@@ -394,3 +394,23 @@ if (header) {
         lastScroll = current;
     });
 }
+
+/* ------------------------------------------------------------
+   SPOTIFY USER ID
+------------------------------------------------------------ */
+async function getSpotifyUserId(accessToken) {
+  const res = await fetch("https://api.spotify.com/v1/me", {
+    headers: {
+      Authorization: "Bearer " + accessToken
+    }
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    console.error("Failed to fetch Spotify user:", err);
+    throw new Error("Could not fetch Spotify user ID");
+  }
+
+  const data = await res.json();
+  return data.id;
+}

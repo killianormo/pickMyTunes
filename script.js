@@ -13,7 +13,7 @@ const tidalClientId   = "FmWv0A27XqBaqknR";
 const redirectUri     = "https://killianormo.github.io/pickMyTunes/";
 const albumCountToPick = 3;
 
-// 🔁 Cloudflare Worker base URL
+// Cloudflare Worker base URL
 const BACKEND_BASE =
   "https://pickmytunes-backend.killianormond.workers.dev";
 
@@ -281,7 +281,12 @@ async function init() {
   const code   = params.get("code");
   const source = localStorage.getItem("musicSource");
 
-  if (!code || !source) return;
+  
+  if (!code) {
+    document.getElementById("sourceSelector")?.style.setProperty("display", "block");
+    document.getElementById("loadingTile")?.style.setProperty("display", "none");
+    return;
+  }
 
   showLoading();
 
@@ -335,3 +340,17 @@ if (header) {
     lastScroll = current;
   });
 }
+
+/* ============================================================
+   HOME LINK RESET
+============================================================ */
+document.addEventListener("DOMContentLoaded", () => {
+  const homeLink = document.querySelector(".header-home");
+
+  if (homeLink) {
+    homeLink.addEventListener("click", () => {
+      // Reset app state so source selector shows
+      localStorage.removeItem("musicSource");
+    });
+  }
+});

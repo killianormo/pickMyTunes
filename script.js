@@ -3,6 +3,7 @@
 ============================================================ */
 let accessToken = null;
 let spotifyUserId = null;
+let tidalUserId = null;
 let cachedAlbums = [];
 
 /* ============================================================
@@ -13,7 +14,6 @@ const tidalClientId   = "FmWv0A27XqBaqknR";
 const redirectUri     = "https://killianormo.github.io/pickMyTunes/";
 const albumCountToPick = 3;
 
-// Cloudflare Worker base URL
 const BACKEND_BASE =
   "https://pickmytunes-backend.killianormond.workers.dev";
 
@@ -42,22 +42,15 @@ async function generateCodeChallenge(verifier) {
 /* ============================================================
    SOURCE SELECTION
 ============================================================ */
-const spotifyTile = document.getElementById("spotifySource");
-const tidalTile   = document.getElementById("tidalSource");
+document.getElementById("spotifySource")?.addEventListener("click", () => {
+  localStorage.setItem("musicSource", "spotify");
+  loginSpotify();
+});
 
-if (spotifyTile) {
-  spotifyTile.onclick = () => {
-    localStorage.setItem("musicSource", "spotify");
-    loginSpotify();
-  };
-}
-
-if (tidalTile) {
-  tidalTile.onclick = () => {
-    localStorage.setItem("musicSource", "tidal");
-    loginTidal();
-  };
-}
+document.getElementById("tidalSource")?.addEventListener("click", () => {
+  localStorage.setItem("musicSource", "tidal");
+  loginTidal();
+});
 
 /* ============================================================
    LOGIN FLOWS
@@ -147,25 +140,7 @@ async function exchangeTidalToken(code) {
 }
 
 /* ============================================================
-   SPOTIFY USER ID
-============================================================ */
-async function getSpotifyUserId(token) {
-  const res = await fetch("https://api.spotify.com/v1/me", {
-    headers: { Authorization: "Bearer " + token }
-  });
-
-  if (!res.ok) {
-    const err = await res.text();
-    console.error("Spotify /me failed:", err);
-    throw new Error("Failed to fetch Spotify user ID");
-  }
-
-  const data = await res.json();
-  return data.id;
-}
-
-/* ============================================================
-   LOADING ANIMATION
+   LOADING
 ============================================================ */
 let loadingInterval = null;
 
@@ -181,10 +156,7 @@ function startLoadingAnimation() {
 }
 
 function stopLoadingAnimation() {
-  if (loadingInterval) {
-    clearInterval(loadingInterval);
-    loadingInterval = null;
-  }
+  clearInterval(loadingInterval);
 }
 
 /* ============================================================
@@ -194,49 +166,87 @@ async function loadAlbumsFromBackend(provider, userId) {
   const res = await fetch(
     `${BACKEND_BASE}/albums?provider=${provider}&userId=${userId}`
   );
-
   const data = await res.json();
   return data.albums || [];
 }
 
-async function syncSpotifyToBackend(token, userId) {
-  const res = await fetch(`${BACKEND_BASE}/sync/spotify`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      accessToken: token,
-      userId
-    })
-  });
-
-  if (!res.ok) {
-    const err = await res.text();
-    console.error("Spotify backend sync failed:", err);
-    return false;
-  }
-
-  return true;
-}
-
 /* ============================================================
-   RANDOM PICK
+   INIT
 ============================================================ */
-function pickRandomAlbums(list, count) {
-  let pool = [...list];
-  let chosen = [];
+async function init() {
+  const params = new URLSearchParams(window.location.search);
+  const code   = params.get("code");
+  const source = localStorage.getItem("musicSource");
 
-  for (let i = 0; i < count && pool.length; i++) {
-    const index = Math.floor(Math.random() * pool.length);
-    chosen.push(pool[index]);
-    pool.splice(index, 1);
+  if (!code) {
+    document.getElementById("sourceSelector")?.style.setProperty("display", "block");
+    document.getElementById("loadingTile")?.style.setProperty("display", "none");
+    return;
   }
 
-  return chosen;
+  document.getElementById("sourceSelector")?.style.setProperty("display", "none");
+  document.getElementById("loadingTile")?.style.setProperty("display", "block");
+  startLoadingAnimation();
+
+  if (source === "spotify") {
+    const tokenData = await exchangeSpotifyToken(code);
+    accessToken = tokenData.access_token;
+
+    const me = await fetch("https://api.spotify.com/v1/me", {
+      headers: { Authorization: "Bearer " + accessToken }
+    }).then(r => r.json());
+
+    spotifyUserId = me.id;
+
+    cachedAlbums = await loadAlbumsFromBackend("spotify", spotifyUserId);
+
+    if (!cachedAlbums.length) {
+      await fetch(`${BACKEND_BASE}/sync/spotify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accessToken, userId: spotifyUserId })
+      });
+
+      cachedAlbums = await loadAlbumsFromBackend("spotify", spotifyUserId);
+    }
+  }
+
+  if (source === "tidal") {
+    const tokenData = await exchangeTidalToken(code);
+    accessToken = tokenData.access_token;
+
+    const syncRes = await fetch(`${BACKEND_BASE}/sync/tidal`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accessToken })
+    }).then(r => r.json());
+
+    tidalUserId = syncRes.userId;
+
+    cachedAlbums = await loadAlbumsFromBackend("tidal", tidalUserId);
+  }
+
+  stopLoadingAnimation();
+  document.getElementById("loadingTile")?.style.setProperty("display", "none");
+
+  displayAlbums(pickRandomAlbums(cachedAlbums, albumCountToPick));
 }
+
+init();
 
 /* ============================================================
    DISPLAY
 ============================================================ */
+function pickRandomAlbums(list, count) {
+  const pool = [...list];
+  const chosen = [];
+  for (let i = 0; i < count && pool.length; i++) {
+    const idx = Math.floor(Math.random() * pool.length);
+    chosen.push(pool.splice(idx, 1)[0]);
+  }
+  return chosen;
+}
+
 function displayAlbums(list) {
   const results = document.getElementById("results");
   results.innerHTML = "";
@@ -252,105 +262,19 @@ function displayAlbums(list) {
     `;
   });
 
-  const btn = document.getElementById("pickMoreBtn");
-  if (btn) {
-    btn.textContent = `Pick ${albumCountToPick} More!`;
-    btn.style.display = "inline-block";
-  }
+  document.getElementById("pickMoreBtn").style.display = "inline-block";
 }
-
-/* ============================================================
-   LOADING UI
-============================================================ */
-function showLoading() {
-  document.getElementById("sourceSelector")?.style.setProperty("display", "none");
-  document.getElementById("loadingTile")?.style.setProperty("display", "block");
-  startLoadingAnimation();
-}
-
-function hideLoading() {
-  document.getElementById("loadingTile")?.style.setProperty("display", "none");
-  stopLoadingAnimation();
-}
-
-/* ============================================================
-   INIT
-============================================================ */
-async function init() {
-  const params = new URLSearchParams(window.location.search);
-  const code   = params.get("code");
-  const source = localStorage.getItem("musicSource");
-
-  
-  if (!code) {
-    document.getElementById("sourceSelector")?.style.setProperty("display", "block");
-    document.getElementById("loadingTile")?.style.setProperty("display", "none");
-    return;
-  }
-
-  showLoading();
-
-  if (source === "spotify") {
-    const tokenData = await exchangeSpotifyToken(code);
-    accessToken = tokenData.access_token;
-
-    spotifyUserId = await getSpotifyUserId(accessToken);
-
-    // Try cache first
-    cachedAlbums =
-      await loadAlbumsFromBackend("spotify", spotifyUserId);
-
-    // If empty, sync then reload
-    if (!cachedAlbums.length) {
-      await syncSpotifyToBackend(accessToken, spotifyUserId);
-      cachedAlbums =
-        await loadAlbumsFromBackend("spotify", spotifyUserId);
-    }
-  }
-
-  // (TIDAL left frontend-only for now)
-
-  hideLoading();
-
-  const picked = pickRandomAlbums(cachedAlbums, albumCountToPick);
-  displayAlbums(picked);
-}
-
-init();
 
 /* ============================================================
    PICK MORE
 ============================================================ */
 document.getElementById("pickMoreBtn")?.addEventListener("click", () => {
-  const picked = pickRandomAlbums(cachedAlbums, albumCountToPick);
-  displayAlbums(picked);
+  displayAlbums(pickRandomAlbums(cachedAlbums, albumCountToPick));
 });
 
 /* ============================================================
-   HEADER SCROLL EFFECT
+   HOME RESET
 ============================================================ */
-const header = document.querySelector(".app-header");
-
-if (header) {
-  let lastScroll = 0;
-  window.addEventListener("scroll", () => {
-    const current = window.scrollY;
-    header.classList.toggle("shrink", current > 20);
-    header.classList.toggle("scrolled-up", current < lastScroll);
-    lastScroll = current;
-  });
-}
-
-/* ============================================================
-   HOME LINK RESET
-============================================================ */
-document.addEventListener("DOMContentLoaded", () => {
-  const homeLink = document.querySelector(".header-home");
-
-  if (homeLink) {
-    homeLink.addEventListener("click", () => {
-      // Reset app state so source selector shows
-      localStorage.removeItem("musicSource");
-    });
-  }
+document.querySelector(".header-home")?.addEventListener("click", () => {
+  localStorage.removeItem("musicSource");
 });

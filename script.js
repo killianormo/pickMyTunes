@@ -274,35 +274,29 @@ function displayAlbums(list) {
     `;
   });
 
-  document.getElementById("pickMoreBtn").style.display = "inline-block";
+  updatePickMoreButton();
 }
 
 /* ============================================================
    PICK MORE
 ============================================================ */
-/*
-document.getElementById("pickMoreBtn")?.addEventListener("click", () => {
-  displayAlbums(pickRandomAlbums(cachedAlbums, albumCountToPick));
-  pickMoreBtn.textContent = `Pick ${albumCountToPick} More!`;
-});
-*/
-
 function updatePickMoreButton() {
   const btn = document.getElementById("pickMoreBtn");
   if (!btn) return;
 
-  btn.textContent = `Pick ${albumCountToPick} More`;
+  btn.textContent = `Pick ${albumCountToPick} More!`;
   btn.style.display = "inline-block";
 }
 
-displayAlbums(initiallySelected);
+// Set button text immediately on page load (safe even if hidden in CSS)
 updatePickMoreButton();
 
-document.getElementById("pickMoreBtn").onclick = () => {
-  const selected = pickRandomAlbums(savedAlbums, albumCountToPick);
+document.getElementById("pickMoreBtn")?.addEventListener("click", () => {
+  const selected = pickRandomAlbums(cachedAlbums, albumCountToPick);
   displayAlbums(selected);
   updatePickMoreButton();
-};
+});
+
 
 /* ============================================================
    HOME RESET

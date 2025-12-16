@@ -124,7 +124,8 @@ async function exchangeTidalToken(code) {
     grant_type: "authorization_code",
     code,
     redirect_uri: redirectUri,
-    code_verifier: verifier
+    code_verifier: verifier,
+    resource: "https://openapi.tidal.com/"
   });
 
   const res = await fetch(

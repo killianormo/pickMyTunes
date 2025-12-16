@@ -271,6 +271,7 @@ function displayAlbums(list) {
 ============================================================ */
 document.getElementById("pickMoreBtn")?.addEventListener("click", () => {
   displayAlbums(pickRandomAlbums(cachedAlbums, albumCountToPick));
+  pickMoreBtn.textContent = `Pick ${albumCountToPick} More!`;
 });
 
 /* ============================================================

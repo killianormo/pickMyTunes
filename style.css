@@ -171,56 +171,6 @@ button:hover {
 
 
 /* ------------------------------------------------------------
-   LOADING TILE
------------------------------------------------------------- */
-/*
-
-.loading-tile {
-    width: 256px;
-    height: 256px;               
-    background: #22294d;
-    border-radius: 14px;
-    padding: 0;                  
-    margin: 40px auto 0 auto;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;           
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
-}
-
-
-.loading-top {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin-bottom: 12px;
-}
-
-.loading-logo {
-    width: 128px;
-    height: auto;
-    opacity: 0.9;
-}
-
-.loading-bottom {
-    background: #5d2ebf;
-    color: #ffffff;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 500;
-    text-align: center;
-}
-
-#loadingDots {
-    display: inline-block;
-    width: 20px;
-    text-align: left;
-}
-
-*/
-
-/* ------------------------------------------------------------
    ALBUM RESULT CARDS
 ------------------------------------------------------------ */
 #results {
@@ -527,4 +477,54 @@ body {
 
 #sourceSelector {
     display: none;
+}
+
+/* ------------------------------------------------------------
+   TIDAL COMING SOON OVERLAY
+------------------------------------------------------------ */
+.source-tile.tidal {
+    position: relative;
+    cursor: not-allowed;
+}
+
+/* Overlay */
+.source-tile.tidal::after {
+    content: "Coming Soon";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top right, #000, #444);
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    border-radius: inherit;
+}
+
+/* Subtext */
+.source-tile.tidal::before {
+    content: "TIDAL library access is not yet available";
+    position: absolute;
+    bottom: 20px;
+    left: 15px;
+    right: 15px;
+    text-align: center;
+    font-size: 13px;
+    color: #dddddd;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+/* Show overlay on hover */
+.source-tile.tidal:hover::after,
+.source-tile.tidal:hover::before {
+    opacity: 1;
+}
+
+/* Fade logo slightly */
+.source-tile.tidal:hover img {
+    opacity: 0.25;
 }

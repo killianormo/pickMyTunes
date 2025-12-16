@@ -528,3 +528,18 @@ body {
 .source-tile.tidal:hover img {
     opacity: 0.25;
 }
+
+/* ------------------------------------------------------------
+   MOBILE LAYOUT
+------------------------------------------------------------ */
+@media (max-width: 640px) {
+    #results {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .album {
+        width: 90%;
+        max-width: 320px;
+    }
+}

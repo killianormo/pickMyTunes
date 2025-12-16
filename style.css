@@ -530,19 +530,18 @@ body {
 }
 
 /* ============================================================
-   MOBILE — FORCE VERTICAL ALBUM STACK
-   (must be last to override all other media queries)
+   MOBILE PORTRAIT — VERTICAL ALBUM STACK
 ============================================================ */
-@media (max-width: 640px) {
+@media (max-width: 640px) and (orientation: portrait) {
     #results {
         display: flex;
-        flex-direction: column !important;
-        flex-wrap: nowrap !important;
+        flex-direction: column;
+        flex-wrap: nowrap;
         align-items: center;
     }
 
     .album {
-        width: 90% !important;
+        width: 90%;
         max-width: 320px;
     }
 }
